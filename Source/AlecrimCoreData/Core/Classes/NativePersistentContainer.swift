@@ -11,6 +11,7 @@ import CoreData
 
 // MARK: -
 
+@available(iOS 10.0, *) // to make CocoaPods happy
 @available(macOSApplicationExtension 10.12, iOSApplicationExtension 10.0, tvOSApplicationExtension 10.0, watchOSApplicationExtension 3.0, *)
 internal class NativePersistentContainer: NSPersistentContainer, UnderlyingPersistentContainer {
     
@@ -26,8 +27,6 @@ internal class NativePersistentContainer: NSPersistentContainer, UnderlyingPersi
         super.init(name: name, managedObjectModel: model)
         
         self._viewContext.persistentStoreCoordinator = self.persistentStoreCoordinator
-        self._viewContext.automaticallyMergesChangesFromParent = true
-        self._viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
     
     internal override func newBackgroundContext() -> NSManagedObjectContext {
@@ -39,9 +38,6 @@ internal class NativePersistentContainer: NSPersistentContainer, UnderlyingPersi
         else {
             context.persistentStoreCoordinator = self.persistentStoreCoordinator
         }
-
-        context.automaticallyMergesChangesFromParent = true
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
         return context
     }
@@ -65,11 +61,17 @@ internal class NativePersistentContainer: NSPersistentContainer, UnderlyingPersi
     internal func alc_loadPersistentStores(completionHandler block: @escaping (PersistentStoreDescription, Error?) -> Void) {
         self.loadPersistentStores(completionHandler: block)
     }
+    
+    internal func configureDefaults(for context: NSManagedObjectContext) {
+        context.automaticallyMergesChangesFromParent = true
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+    }
 
 }
 
 // MARK: -
 
+@available(iOS 10.0, *) // to make CocoaPods happy
 @available(macOSApplicationExtension 10.12, iOSApplicationExtension 10.0, tvOSApplicationExtension 10.0, watchOSApplicationExtension 3.0, *)
 extension NSPersistentStoreDescription: PersistentStoreDescription {
     

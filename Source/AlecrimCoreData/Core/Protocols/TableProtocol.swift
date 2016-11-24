@@ -18,12 +18,7 @@ public protocol TableProtocol: CoreDataQueryable {
 extension TableProtocol where Self.Element: NSManagedObject {
     
     public final func create() -> Self.Element {
-        if #available(macOSApplicationExtension 10.12, iOSApplicationExtension 10.0, tvOSApplicationExtension 10.0, watchOSApplicationExtension 3.0, *) {
-            return Self.Element(context: self.context)
-        }
-        else {
-            return Self.Element(entity: self.entityDescription, insertInto: self.context)
-        }
+        return Self.Element(entity: self.entityDescription, insertInto: self.context)
     }
 
     public final func delete(_ entity: Self.Element) {
@@ -43,14 +38,7 @@ extension TableProtocol {
             let fetchRequest = self.toFetchRequest() as NSFetchRequest<NSManagedObjectID>
             fetchRequest.resultType = .managedObjectIDResultType
             
-            let objectIDs: [NSManagedObjectID]
-            
-            if #available(macOSApplicationExtension 10.12, iOSApplicationExtension 10.0, tvOSApplicationExtension 10.0, watchOSApplicationExtension 3.0, *) {
-                objectIDs = try fetchRequest.execute()
-            }
-            else {
-                objectIDs = try self.context.fetch(fetchRequest)
-            }
+            let objectIDs: [NSManagedObjectID] = try self.context.fetch(fetchRequest)
             
             for objectID in objectIDs {
                 let object = try self.context.existingObject(with: objectID)
